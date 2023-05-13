@@ -13,6 +13,13 @@ else:
     prefix = 'sqlite:////'
 
 
+class Operations:
+    """操作选项"""
+    CONFIRM = 'confirm'
+    RESET_PASSWORD = 'reset-password'
+    CHANGE_EMAIL = 'change-email'
+
+
 class BaseConfig:
     ALBUMY_ADMIN_EMAIL = os.getenv('ALBUMY_ADMIN', 'admin@helloflask.com')
     ALBUMY_PHOTO_PER_PAGE = 12

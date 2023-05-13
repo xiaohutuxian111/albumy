@@ -2,8 +2,12 @@
 
 
 from urllib.parse import urlparse, urljoin
+from flask import request, url_for, redirect, flash, current_app
+from authlib.jose import jwt, JoseError
 
-from flask import request, url_for, redirect, flash
+from albumy.models import User
+from albumy.settings import Operations
+from albumy.extensions import db
 
 
 def is_safe_url(target):
@@ -29,3 +33,45 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
             ))
+
+
+def generate_token(user, operation, expire_in=None, **kwargs):
+    """
+    生成随机令牌
+    https://blog.csdn.net/weixin_43863487/article/details/123784400
+    """
+    # 签名算法
+    header = {'alg': 'HS256'}
+    # 用于签名的密钥
+    key = current_app.config['SECRET_KEY']
+    data = {'id': user.id, 'operation': operation}
+    data.update(**kwargs)
+    return jwt.encode(header=header, payload=data, key=key)
+
+
+def validate_token(user, token, operation, new_password=None):
+    """用于验证用户注册和修改密码后邮箱的token，并完成相应的确认操作"""
+    key = current_app.config['SECRET_KEY']
+    try:
+        data = jwt.decode(token, key)
+        print(data)
+    except JoseError:
+        return False
+    if operation != data.get('operation') or user.id != data.get('id'):
+        user.confirmed = True
+    elif operation == Operations.CONFIRM:
+        user.confirmed = True
+    elif operation == Operations.RESET_PASSWORD:
+        user.set_password(new_password)
+    elif operation == Operations.CHANGE_EMAIL:
+        new_email = data.get('new_email')
+        if new_email is None:
+            return False
+        if User.query.filter_by(email=new_email).first() is not None:
+            return False
+        user.email = new_email
+    else:
+        return False
+
+    db.session.commit()
+    return True

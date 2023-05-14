@@ -5,9 +5,8 @@
 @Description:项目模型
 """
 from datetime import datetime
-
 from flask import current_app
-
+from  flask_avatars import  Identicon
 from albumy.extensions import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -73,6 +72,11 @@ class User(db.Model, UserMixin):
     bio = db.Column(db.String(120))
     location = db.Column(db.String(50))
     member_since = db.Column(db.DateTime, default=datetime.utcnow())
+    # 头像设置
+    avatar_s = db.Column(db.String(64))
+    avatar_m = db.Column(db.String(64))
+    avatar_l = db.Column(db.String(64))
+
 
     confirmed = db.Column(db.Boolean, default=False)
 
@@ -85,6 +89,7 @@ class User(db.Model, UserMixin):
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         self.set_role()
+        self.generate_avatar()
 
     def set_role(self):
         if self.role is None:
@@ -108,6 +113,13 @@ class User(db.Model, UserMixin):
         permission = Permission.query.filter_by(name=permission_name).first()
         return permission is not None and self.role is not None and permission in self.role.permissions
 
+    def generate_avatar(self):
+        avatar = Identicon()
+        filename = avatar.generate(text=self.username)
+        self.avatar_s = filename[0]
+        self.avatar_m = filename[1]
+        self.avatar_l = filename[2]
+        db.session.commit()
 
 class Photo(db.Model):
     """图片模型"""

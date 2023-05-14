@@ -46,6 +46,14 @@ class BaseConfig:
     MAIL_DEFAULT_SENDER = ('Albumy Admin', MAIL_USERNAME)
 
 
+    # 设置上传文件配置
+    DROPZONE_ALLOWED_FILE_TYPE = 'image'
+    DROPZONE_MAX_FILE_SIZE = 3
+    DROPZONE_MAX_FILES = 30
+    DROPZONE_ENABLE_CSRF = True
+
+
+
 class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = \
         prefix + os.path.join(basedir, 'data-dev.db')

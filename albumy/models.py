@@ -10,7 +10,7 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-class User(db, UserMixin):
+class User(db.Model, UserMixin):
     """
     用户模型
     """

@@ -121,6 +121,8 @@ class User(db.Model, UserMixin):
         self.avatar_l = filename[2]
         db.session.commit()
 
+
+
 class Photo(db.Model):
     """图片模型"""
     id = db.Column(db.Integer, primary_key=True)

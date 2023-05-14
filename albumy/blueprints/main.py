@@ -2,7 +2,7 @@
 import os
 
 from flask_dropzone import random_filename
-from flask import render_template, Blueprint, request, current_app
+from flask import render_template, Blueprint, request, current_app, send_from_directory
 from albumy.decorators import confirm_required, permission_required
 from flask_login import login_required, current_user
 
@@ -43,6 +43,11 @@ def upload():
         db.session.add(photo)
         db.session.commit()
     return render_template('main/upload.html')
+
+
+@main_bp.route('/avatars/<path:filename>')
+def get_avatar(filename):
+    return send_from_directory(current_app.config['AVATARS_SAVE_PATH'], filename)
 
 
 @main_bp.route('/explore')

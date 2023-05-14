@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager,AnonymousUserMixin
 from flask_wtf import CSRFProtect
 from flask_dropzone import Dropzone
+from flask_avatars import Avatars
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
@@ -16,6 +17,8 @@ login_manager = LoginManager()
 csrf =  CSRFProtect()
 #  s上传文件模块
 dropzone = Dropzone()
+#  头像模块
+avatars = Avatars()
 
 
 

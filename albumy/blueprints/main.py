@@ -8,8 +8,7 @@ from flask_login import login_required, current_user
 
 from albumy.models import Photo
 from albumy.extensions import db
-from albumy.utils import  resize_image
-
+from albumy.utils import resize_image
 
 main_bp = Blueprint('main', __name__)
 
@@ -32,14 +31,14 @@ def upload():
         # 保存图片
         f.save(os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename))
         # 裁剪图片
-        filename_s = resize_image(f,filename,current_app.config['ALBUMY_PHOTO_SIZE']['small'])
-        filename_m = resize_image(f,filename,current_app.config['ALBUMY_PHOTO_SIZE']['medium'])
+        filename_s = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['small'])
+        filename_m = resize_image(f, filename, current_app.config['ALBUMY_PHOTO_SIZE']['medium'])
         photo = Photo(
             # 创建文件记录
             filename=filename,
-            filename_s = filename_s,
-            filename_m = filename_m,
-            author=current_user.get_current_object()
+            filename_s=filename_s,
+            filename_m=filename_m,
+            author=current_user._get_current_object()
         )
         db.session.add(photo)
         db.session.commit()

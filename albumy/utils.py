@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-
-
+import os
+import PIL
+from PIL import Image
 from urllib.parse import urlparse, urljoin
 from flask import request, url_for, redirect, flash, current_app
 from authlib.jose import jwt, JoseError
@@ -33,6 +34,27 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
             ))
+
+
+def resize_image(image, filename, base_width):
+    """
+    裁剪图片
+    :param image:
+    :param filename:
+    :param base_width:
+    :return:
+    """
+    filename, ext = os.path.splitext(filename)
+    img = Image.open(image)
+    if img.size[0] <= base_width:
+        return filename + ext
+    w_percent = (base_width / float(img.size[0]))
+    h_size = int(float(img.size[1]) * float(w_percent))
+    img = img.resize((base_width, h_size), PIL.Image.ANTIALIAS)
+
+    filename += current_app.config["ALBUMY_PHOTO_SUFFIX"][base_width] + ext
+    img.save(os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename), optimize=True, quality=85)
+    return filename
 
 
 def generate_token(user, operation, expire_in=None, **kwargs):

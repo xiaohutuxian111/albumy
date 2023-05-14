@@ -10,7 +10,8 @@ from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.user import user_bp
 
 from albumy.extensions import bootstrap, db, mail, moment, login_manager,csrf
-from albumy.models import User
+from albumy.fakes import fake_photo
+from albumy.models import User, Role
 from albumy.settings import config
 
 
@@ -100,14 +101,19 @@ def register_commands(app):
 
     @app.cli.command()
     @click.option('--user', default=10, help="创建用户,默认为10个")
-    def forge(user):
+    @click.option('--photo', default=50, help="创建照片,默认为50个")
+    def forge(user,photo):
         """Generate fake data."""
         from albumy.fakes import fake_admin, fake_user
         db.drop_all()
         db.create_all()
 
+        click.echo("初始化角色和权限")
+        Role.init_role()
         click.echo("创建管理员用户")
         fake_admin()
         click.echo("生成 %d 个用户" % user)
         fake_user(user)
+        click.echo("生成 %d 张照片"%photo)
+        fake_photo(photo)
         click.echo('完成')

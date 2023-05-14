@@ -22,7 +22,7 @@ def index():
 @main_bp.route('/upload', methods=['POST', 'GET'])
 @login_required  # 验证登录状态
 @confirm_required  # 验证确认状态
-@permission_required  # 验证权限
+@permission_required('UPLOAD')  # 验证权限
 def upload():
     if request.method == "POST" and 'file' in request.files:
         # 获取图片文件对象
